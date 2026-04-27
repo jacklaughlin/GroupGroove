@@ -80,7 +80,7 @@ export default function Landing() {
       </div>
 
       <div style={{ padding: '16px', textAlign: 'center', fontSize: '13px', color: 'var(--gray-500)' }}>
-        © {new Date().getFullYear()} GroupGroove
+        © {new Date().getFullYear()} GroupGroove · Made by Jack Laughlin
       </div>
     </div>
   );
