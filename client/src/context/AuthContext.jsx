@@ -11,8 +11,13 @@ export function AuthProvider({ children }) {
     const savedToken = localStorage.getItem('gg_token');
     const savedUser = localStorage.getItem('gg_user');
     if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      try {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      } catch {
+        localStorage.removeItem('gg_token');
+        localStorage.removeItem('gg_user');
+      }
     }
     setLoading(false);
   }, []);

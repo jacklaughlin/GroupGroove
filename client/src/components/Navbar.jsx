@@ -22,7 +22,7 @@ export default function Navbar() {
       boxShadow: '0 2px 6px rgba(0,0,0,0.15)'
     }}>
       <div
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/home')}
         style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
       >
         <span style={{ fontSize: '22px' }}>🎵</span>

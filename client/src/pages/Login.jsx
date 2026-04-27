@@ -26,7 +26,7 @@ export default function Login() {
         return;
       }
       login(data.token, data.user);
-      navigate('/');
+      navigate('/home');
     } catch {
       setError('Network error. Please try again.');
     } finally {

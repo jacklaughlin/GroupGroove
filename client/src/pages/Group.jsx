@@ -191,7 +191,7 @@ export default function Group() {
   return (
     <div style={{ maxWidth: '700px', margin: '0 auto', padding: '32px 16px' }}>
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/home')}
         style={{ background: 'none', border: 'none', color: 'var(--gray-500)', fontSize: '14px', cursor: 'pointer', marginBottom: '16px', padding: '0' }}
       >
         ← Back to groups
