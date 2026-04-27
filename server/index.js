@@ -2,10 +2,13 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const { spawn } = require('child_process');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const pool = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
+const VITE_PORT = 5173;
 
 app.use(cors());
 app.use(express.json());
@@ -20,6 +23,34 @@ app.use('/api/songs', songRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
+// Proxy all non-API requests to Vite dev server
+app.use('/', createProxyMiddleware({
+  target: `http://localhost:${VITE_PORT}`,
+  changeOrigin: true,
+  ws: true,
+  on: {
+    error: (err, req, res) => {
+      if (res && res.writeHead) {
+        res.writeHead(502);
+        res.end('Dev server starting up...');
+      }
+    }
+  }
+}));
+
+async function startVite() {
+  const vite = spawn('npm', ['run', 'dev'], {
+    cwd: path.join(__dirname, '../client'),
+    stdio: 'inherit',
+    env: { ...process.env, VITE_PORT: String(VITE_PORT) }
+  });
+  vite.on('error', err => console.error('Vite error:', err));
+  vite.on('exit', code => console.log('Vite exited with code:', code));
+  process.on('exit', () => vite.kill());
+  process.on('SIGTERM', () => { vite.kill(); process.exit(0); });
+  process.on('SIGINT', () => { vite.kill(); process.exit(0); });
+}
+
 async function initDb() {
   try {
     const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
@@ -31,7 +62,8 @@ async function initDb() {
 }
 
 initDb().then(() => {
-  app.listen(PORT, 'localhost', () => {
-    console.log(`GroupGroove API running on port ${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`GroupGroove running on port ${PORT}`);
+    startVite();
   });
 });
