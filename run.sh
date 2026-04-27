@@ -1,16 +1,15 @@
 #!/bin/bash
 
-# Start backend in background and restart if it crashes
-while true; do
-  node server/index.js &
-  BACKEND_PID=$!
-  wait $BACKEND_PID
-  echo "Backend exited, restarting in 2s..."
-  sleep 2
-done &
+# Kill anything already using our ports to avoid conflicts
+fuser -k 3001/tcp 2>/dev/null || true
+fuser -k 5000/tcp 2>/dev/null || true
+sleep 1
 
-# Give backend a moment to start
+# Start backend in background
+node server/index.js &
+
+# Wait for backend to be ready
 sleep 2
 
-# Start frontend (this keeps the process alive)
+# Start frontend on port 5000 (keeps process alive)
 cd client && npm run dev
