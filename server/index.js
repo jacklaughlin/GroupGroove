@@ -9,6 +9,7 @@ const pool = require('./db');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const VITE_PORT = 5173;
+const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(cors());
 app.use(express.json());
@@ -23,20 +24,27 @@ app.use('/api/songs', songRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-// Proxy all non-API requests to Vite dev server
-app.use('/', createProxyMiddleware({
-  target: `http://localhost:${VITE_PORT}`,
-  changeOrigin: true,
-  ws: true,
-  on: {
-    error: (err, req, res) => {
-      if (res && res.writeHead) {
-        res.writeHead(502);
-        res.end('Dev server starting up...');
+if (isProduction) {
+  const distPath = path.join(__dirname, '../client/dist');
+  app.use(express.static(distPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  app.use('/', createProxyMiddleware({
+    target: `http://localhost:${VITE_PORT}`,
+    changeOrigin: true,
+    ws: true,
+    on: {
+      error: (err, req, res) => {
+        if (res && res.writeHead) {
+          res.writeHead(502);
+          res.end('Dev server starting up...');
+        }
       }
     }
-  }
-}));
+  }));
+}
 
 async function startVite() {
   const vite = spawn('npm', ['run', 'dev'], {
@@ -64,6 +72,8 @@ async function initDb() {
 initDb().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`GroupGroove running on port ${PORT}`);
-    startVite();
+    if (!isProduction) {
+      startVite();
+    }
   });
 });

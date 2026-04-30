@@ -1,11 +1,15 @@
 {
   "name": "workspace",
   "version": "1.0.0",
-  "description": "Transferring replit to repository",
-  "main": "index.js",
+  "description": "GroupGroove family music sharing app",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server/index.js",
+    "build": "cd client && npm install && npm run build",
     "dev:server": "nodemon server/index.js",
     "dev:client": "cd client && npm run dev",
     "dev": "node server/index.js & cd client && npm run dev"
