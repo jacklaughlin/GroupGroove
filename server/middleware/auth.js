@@ -1,6 +1,11 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'groupgroove-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('ERROR: JWT_SECRET environment variable is not set. The server cannot start without it.');
+  process.exit(1);
+}
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
