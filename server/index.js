@@ -27,7 +27,8 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 if (isProduction) {
   const distPath = path.join(__dirname, '../client/dist');
   app.use(express.static(distPath));
-  app.get('/{*splat}', (req, res) => {
+  app.get('/{*splat}', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
