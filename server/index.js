@@ -8,8 +8,7 @@ const pool = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const VITE_PORT = 5173;
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production' || process.env.WEBSITE_SITE_NAME;
 
 app.use(cors());
 app.use(express.json());
