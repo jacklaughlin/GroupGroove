@@ -46,18 +46,6 @@ if (isProduction) {
   }));
 }
 
-async function startVite() {
-  const vite = spawn('npm', ['run', 'dev'], {
-    cwd: path.join(__dirname, '../client'),
-    stdio: 'inherit',
-    env: { ...process.env, VITE_PORT: String(VITE_PORT) }
-  });
-  vite.on('error', err => console.error('Vite error:', err));
-  vite.on('exit', code => console.log('Vite exited with code:', code));
-  process.on('exit', () => vite.kill());
-  process.on('SIGTERM', () => { vite.kill(); process.exit(0); });
-  process.on('SIGINT', () => { vite.kill(); process.exit(0); });
-}
 
 async function initDb() {
   try {
@@ -72,8 +60,5 @@ async function initDb() {
 initDb().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`GroupGroove running on port ${PORT}`);
-    if (!isProduction) {
-      startVite();
-    }
   });
 });
